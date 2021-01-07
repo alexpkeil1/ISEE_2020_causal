@@ -1,0 +1,152 @@
+
+\begin{frame}[c]
+	\frametitle{Individual and average causal effects}
+	\visible<1->{Even if we can't estimate individual causal effects, we can use additional assumptions to estimate average potential outcomes ($E(Y^a|\bm{W}=\bm{w})$), and hence average causal effects:}
+	\visible<1->{
+		\begin{description}
+			\item[Population/sample average causal effect ] $E(Y^a) - E(Y^{a^*}) = E(Y^a - Y^{a^*})$
+			\item[ Average affect among the ``$a$-treated''  ] $E(Y^a - Y^{a^*} | A=a)$
+			\item[ Causal dose-response ] $f(y^a)$
+			\item[Conditional average causal effects ] $E(Y^a - Y^{a^*}|\bm{W}=\bm{w})$
+		\end{description}
+	}
+
+\end{frame}
+%
+%\begin{frame}[c]{G-null hypothesis}
+%One "universal" definition of a cause comes from the g-null hypothesis:
+%
+%\[
+%E(Y^{a^*}) = E(Y^a)
+%\]
+%For all possible values of $a^*$, and $a$  
+%
+%\only<2> {Any violation of the g-null hypothesis for an exposure $A$ implies that $A$ is a cause of $Y$}
+%\end{frame}
+
+
+\begin{frame}[c]{Whose average?}
+  \only<1>{The definition of a population average causal effect presupposes a specific population, often called the \textbf{target population}.}
+  \only<2>{Defining the target population is essential to evaluating the utility of estimates of causal effects, and often necessitates concepts of \textbf{generalizability} or \textbf{transportability}\footnote{Ask Daniel Westreich: westreic@email.unc.edu}}
+  \only<3>{Formally \textbf{generalizing} or \textbf{transporting} causal effects relies applying conditional average causal effects (conditional on $\bm{W}$ and/or $\bm{V}$) to populations with different distributions of $\bm{W}$ and/or $\bm{V}$ from the study sample.}
+  \only<4>{$\bm{W}$ and $\bm{V}$ are sometimes referred to as the ``context", or ``state'', since they are often non-modifiable factors that can influence the effectiveness of a policy. We may think of factors like exposure susceptibility, race, and socioeconomic status as classical examples of factors that differ across populations and by which conditional causal effects may vary greatly.}
+  \only<5>{The term ``average causal effect'' is thus vacuous without first defining the target population, which often is not the study population.}
+\end{frame}
+
+
+
+
+\begin{frame}[c]{Causal identification conditions
+	\tiny{
+		\only<4->{No interference}\only<6->{, conditional exchangeability}\only<8->{, positivity}
+	}}
+	\only<1>{Returning to the main thread, causal consistency alone is not sufficient to license the estimation of average causal effects.}
+	\only<2>{Consider if $A$ is vaccination and $Y$ is SARS-COV-2 infection. Your infection, if not vaccinated ($Y^{no}$) doesn't just depend on your vaccination status, but also the vaccination status of your neighbor.}
+	\only<3,4>{
+	\visible<3,4>{If one's potential outcome depends also on others' exposure the potential outcome would have to be denoted by your exposure, as well as everyone else's exposure: (the hideous looking $Y^{a_i, \{a_j \in A: j \neq i\}}$).}
+	\visible<4>{This makes the math much more difficult.\footnote{though causal inference is sometimes still possible: Hudgens et al (2008) \emph{J Am Stat Assoc}}
+		Under the \textbf{no interference} assumption (based on subject matter knowledge), your potential outcomes don't depend on the exposures of others, so we are safe to just use simpler notation and math.}
+		}
+	\only<5>{\textbf{Causal consistency} and \textbf{no interference} give us "observed" potential outcomes, where we know your potential outcome under the exposure that you, in fact, received. However, recall that causal inference requires us to know something about the potential outcomes under counterfactual exposures/policies, as well.}
+	\only<6>{
+		The link to counterfactual policies is provided by \textbf{conditional exchangeability}\footnote{This is sometimes referred to as a ``no unmeasured confounding or selection bias'' assumption}, given by
+		}
+         \only<6,7>{
+		$$
+			Y^a \amalg A  | \textbf{W}= \textbf{w}
+		$$
+        }
+	\only<6>{which reads as "The potential outcome under a given policy is independent of exposure, given confounders." This assumption means that, in a stratum of confounders $\bm{W}$, we can consider the "observed" potential outcomes to stand in for the "missing" potential outcomes because in that stratum the individuals are "exchangeable" with each other
+	}
+	\only<7>{This doesn't give us individual potential outcomes but we can "impute" average potential outcomes in strata of confounders via: 
+	  $$
+	      E(Y^a | A\neq a,  \textbf{W}= \textbf{w}) = E(Y^a | A= a,  \textbf{W}= \textbf{w})
+	  $$
+	  While not obvious, this has *almost* given us enough to estimate average potential outcomes for an entire population, and thus causal effects.
+	}
+	\only<8>{
+		Notably, the conditional causal effect 
+	       $$
+	           E(Y^a | A= a,  \textbf{W}= \textbf{w})
+	      $$
+              only makes sense if it is \emph{possible} to observe the combination $A=a,  \textbf{W}= \textbf{w}$. One way to re-write this is:
+		$$
+			Pr(A=a | \textbf{W}= \textbf{w}) > 0
+		$$
+		for each policy $a$ being compared. This assumption is referred to as \textbf{positivity}.
+	}
+	\only<9>{
+		\textbf{Aside:} Positivity means that, for a given policy $a$, that value of exposure must be \emph{possible} at all joint levels of confounders. \textbf{Sparsity}\footnote{this has been called "stochastic non-positivity"} can occur when $A=a$ is possible, but simply not observed in the data. Here's a distinction:
+		    \begin{description}
+      \item[Non-positivity] always biased, and our causal question may be ill-posed (e.g. effect of hysterectomies among people born without a uterus)
+      \item[Sparsity] biased, but we may reduce/eliminate bias with more data or a model
+    \end{description}
+	}
+	\only<10>{
+		No interference, conditional exchangeability and, positivity are known as \emph{causal identification conditions} because they are sufficient to ``identify'' a causal effect from observed data.\footnote{but not necessarily the data in hand} In a perfectly run randomized trial, these conditions will hold by design. In observational studies, we must rely on subject matter knowledge to judge how well these assumptions are met.
+	}
+\end{frame}
+
+\begin{frame}[c]{Conditional exchangeability and DAGs}
+Conditional exchangeability can be (roughly) read off of a causal directed acyclic graph (DAG). These two tools inhabit different causal inference paradigms (potential outcomes versus do-calculus\footnote{Pearl, Judea. Causality. Cambridge University Press, 2009.}), but they are mathematically equivalent. For example, the following conditional exchangeability statement (among others) is consistent with the following DAG.
+  \begin{columns}
+    \begin{column}[c]{.5\textwidth}
+ 		\begin{align}
+			MDI^{no~arsenic} \amalg Arsenic  | {Urbanicity}= {yes}\nonumber\\
+		\end{align}
+   \end{column}
+    \begin{column}[c]{.5\textwidth}
+	  \begin{tikzpicture}[>=latex, line join=bevel, very thick]
+	     %
+             \node[](x){Arsenic};
+             \node[above right=of x] (z) {Urbanicity};
+             \node[below right=of z] (y) {MDI};
+             %
+             \path[-latex] (x) edge[] (y);  
+             \path[-latex] (z) edge[] (x);  
+             \path[-latex] (z) edge[] (y);  
+          \end{tikzpicture} 
+
+    \end{column}
+  \end{columns}
+This is another place where "subject matter knowledge" is essential for causal inference - if we don't know our DAG we can't assess causal assumptions. 
+
+\end{frame}
+
+\begin{frame}[c]{Minimal causal unit: conditional effects}
+Together the causal identification conditions give us the following:
+
+\[ E(Y^a | W=w) = E(Y | A=a, W=w) \]
+
+Which we can read as: the average \emph{potential} outcome under the policy "Set A=a" in a group where $W=w$ is equal to the average \emph{observed} outcome in a subset of your data where $A=a$ and $W=w$
+
+This link allows us to "see" causal effects in actual data. If we don't believe we can get a conditional effect somewhere, we generally can't do causal effect estimation.
+
+
+\end{frame}
+
+
+\begin{frame}[c]{So you are telling me we need to adjust for confounders?}
+Potential outcomes/causal inference has been criticized for being a re-statement what we already know: we need to adjust for confounders.
+\bigskip
+
+While it's true that causal inference has formalized the definition of confounding (via DAGs)
+\end{frame}
+
+
+%\begin{frame}[c]{Time-varying data: causal identification conditions}
+%	\only<1>{A remarkable achievement of Robins\footnote{Robins (1986) Math Mod} was generalizing causal identification conditions for causal effects of time-varying (longitudinal) exposures. This allows identification of causal effects of policies that are \textbf{static regimes} such as ``always exposed", ``never exposed'' or \textbf{dynamic regimes} such as``if $\bm{W_k}=\bm{w}$, then set $A_k=a$. Else $A_k=a^*$''\footnote{Regimes can ``deterministic'' like this or ``random,'' where values of $A_k$ are drawn from a distribution}
+%	}
+%	\only<2>{
+%	    \textbf{No interference} in longitudinal data states that one's potential outcome at any time is independent of any exposure from any other individual at any time.\footnote{ Subject matter knowledge necessary here would not substantially differ from that required in the time-fixed setting.}
+%	}
+%
+%	\only<3>{
+%	    \textbf{Conditional exchangeability} in longitudinal data states that exposure at a given time (e.g. monthly exposure levels for silica workers) must be independent of future potential outcomes \emph{under a specific policy}, given past values of confounders, prior censoring\footnote{Late entry is never mentioned, but must also be considered when it occurs} and outcome history, and past values of exposure under the specific policy. \footnote{See Young et al (2011) \emph{Stat Biosci} for excellent formal representation}
+%	    
+%	    This may require additional subject matter knowledge relative to the time-fixed setting in that we should better understand joint predictors of censoring and the outcomes of interest.
+%	}
+%	\only<4>{
+%	    \textbf{Positivity} in longitudinal data is also defined for time-specific exposures. The notable feature here is not that all levels of exposure must be possible at all strata of exposure, but that levels of exposure \emph{under the policy of interest} must be possible. This allows for causal inference in occupational data, where exposure may not occur off work, as long as the policy is a dynamic regime such as ``remain uncensored and, if at work, remain exposed below the exposure limit.''\footnote{See Young et al (2011) Stat Biosci for excellent formal representation}
+%	}
+%\end{frame}

@@ -1,0 +1,44 @@
+\begin{frame}{Causal inference and mixtures}
+	One major barrier to causal inference in mixtures is that none of the simple, textbook examples apply
+	
+	\bigskip
+	
+	Today we'll create a map from the things you may know (textbook causality - with review) to things that I hope you can become more comfortable with (causality in mixtures)
+	
+	\bigskip
+	This session will be recorded, and you can access materials, so I will move fast, but please ask questions!
+\end{frame}
+
+\begin{frame}{Scope}
+	The discussion today is in restricted to a very specific question that might be asked of mixtures data (use your own definition)
+	
+	\bigskip
+
+       "What would be the health impact on some health outcome if we could modify some or all of the exposures in the mixture?"\footnote{I may speak as though this is the only useful question - forgive my enthusiasm - I do not believe that.}	
+	\bigskip
+
+      I prefer to call this endeavor "causal effect estimation"\footnote{Greenland, S. (2017). For and against methodologies: some perspectives on recent causal and statistical inference debates. European journal of epidemiology, 32(1), 3-20.}, but the label "causal inference" persists, so I use it
+\end{frame}
+
+
+\begin{frame}{Causal inference for the extremely busy}
+	Causal inference combines (sometimes unverifiable) assumptions and past observations to sharpen knowledge about how we can change the future or what we should have done differently in the past
+	
+	\bigskip
+	
+	Causal inference is \textbf{not} the application of special methods that distinguish causation from correlation in a given data set
+	\bigskip
+	
+	Tools of causal inference are effective for evaluating new methods re: do they answer the question I want to ask?
+\end{frame}
+
+
+\begin{frame}{What is a cause?}
+	\only<1>{``Cause'' has many potential definitions}
+	\only<2>{Many definitions (or at least common uses) are incomplete\footnote{e.g. Granger causality}, ambiguous\footnote{i.e. we cannot map them to precise mathematical statements} or too restrictive\footnote{e.g. deterministic causality}}
+%	\only<3>{Consider:\\\includegraphics[width=\linewidth]{fig/acs_cancercauses.png}}
+%	\only<4>{Now consider:\\\input{analyses/seer/seercancerdeathrates.tex}\footnotetext{Data from Cancer.gov SEER*Explorer, USA, all race/ethnicities, all sexes}}
+%	\only<5>{Why wouldn't we consider age a cause of cancer?}
+%	\only<6>{A goal of improving public health leads to a \textbf{policy}\footnote{A ``policy'' is a function that takes as input a current state and outputs an action. This definition comports with common usage of``public health policy'' and so I use in preference to ``regime.''} definition of a cause}
+	\only<3>{A goal of improving (and not just observing) public health leads to a \textbf{policy}\footnote{A ``policy'' is a function that takes as input a current state and outputs an action. This definition comports with common usage of ``public health policy'' and so I use in preference to ``regime.''} definition of a cause}
+\end{frame}

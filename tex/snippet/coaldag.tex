@@ -1,0 +1,24 @@
+{\footnotesize
+	  \begin{tikzpicture}[>=latex, line join=bevel, very thick]
+	     %
+             \node[](coal){\begin{tabular}{c}Proximity to \\ coal fired plant\end{tabular}};
+             \node[above right=of coal, shift={(0,-1)}](a){Arsenic $(A)$};
+             \node[right=of coal](b){Beryllium $(B)$};
+             \node[below right=of coal, shift={(0,1)}](c){Cadmium $(C)$};
+             \node[ right=of b] (y) {\begin{tabular}{c}Mental development\\ index $(Y)$\end{tabular}};
+             \node[above =of a] (w1) {\begin{tabular}{c}\\Black race $(W2)$\end{tabular}};
+             \node[above =of w1, shift={(0,-1)}] (w2) {\begin{tabular}{c}Urbanicity $(W1)$\end{tabular}};
+             %
+             \path[-latex] (coal) edge[] (a);  
+             \path[-latex] (coal) edge[] (b);  
+             \path[-latex] (coal) edge[] (c);  
+             \path[-latex] (a) edge[] (y);  
+             \path[-latex] (b) edge[] (y);  
+             \path[-latex] (c) edge[] (y);  
+             \path[-latex] (a) edge[] (y);  
+             \path[latex-latex] (w1) edge[style=dashed] (y);  
+             \path[-latex] (w1) edge[] (coal);  
+             \path[-latex] (w2) edge[bend right] (coal);  
+             \path[latex-latex] (w2) edge[style=dashed, bend left] (y);  
+          \end{tikzpicture} 
+}

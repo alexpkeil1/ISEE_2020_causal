@@ -1,0 +1,66 @@
+\begin{frame} [c]{Policy definition of a cause\footnote{This is packed and will be formalized}}
+	Exposure \textbf{causes} an outcome if a manipulation\footnote{e.g. a policy could include random assignment to treatment/control arms} of the exposure (e.g. via intervention) would change the outcome\footnote{Robins and Greenland (2000) \emph{J. Am. Stat. Assoc.}}
+\end{frame}
+
+%\begin{frame} [c]{Aside: can a state be a cause?}
+%	\only<1>{ Debate with resolute camps: can obesity be a cause?\footnote{Vandenbroucke et al (2016) \emph{Int. J Epid.} + 8 commentaries }}
+%	\only<2>{For today, no\footnote{Under the policy definition, the ``state'' determines the policy (e.g. if obese <state>, then restrict caloric intake <policy>). I mostly just don't want to talk about this the policy definition can absorb most of what we mean when we consider states as causes, provided that we collect good data - see also Vanderweele and Robinson (2014) \emph{Epidemiology}.}}
+%	\only<2>{For today, no}
+%\end{frame}
+
+
+\begin{frame} [c]{Policy and decisions}
+	\begin{itemize}
+		\visible<1->{\item Causal effects contrast one policy with another\footnote{Or define a function in the case of continuous policies like dose-responses}}
+		      \visible<2->{\item Causal effect estimation allows ``optimal'' policy choices}
+		      \visible<3->{\item Epidemiologic causal inference is about improving \textbf{decisions} for groups in context}
+	\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Motivating example: coal fired power plants and cognitive development}
+	\begin{itemize}
+		\item Burning coal for energy produces many byproducts, including a mixture of air toxics
+		\item Some of these have known detrimental effects on early-life cognitive outcomes
+		\item Closure of coal-fired plants has been associated with improvements in cognitive outcomes
+		\item (So that I can share the data) I performed a simulation study of exposure to coal-fired power plant emissions and mental development index
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Motivating example: coal fired power plants and cognitive development}
+  \begin{columns}
+    \begin{column}[t]{.4\textwidth}
+      \begin{itemize}
+      \item Simulated N=2020 3 yr olds
+      \item Annual mean residential air exposures (ug/m$^3$)
+      \item $W1,W2$ associated with $Y$ via unmeasured, historical factors (education, racism)
+      \item Coal plants near urban centers, and race associated with proximity to coal plants via redlining
+    \end{itemize}
+    \end{column}
+    \begin{column}[t]{.7\textwidth}
+  \include{snippet/coaldag.tex}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+
+\begin{frame}{Motivating example: coal fired power plants and cognitive development}
+(Possible) Causal questions of interest:
+    \begin{description}
+      \item[Causal independent exposure-response] How does the population average MDI change as we increase Arsenic but hold other exposures constant
+      \item[Causal joint exposure-response] How does the population average MDI change as we increase all exposures by the same amount
+      \item[Causal attributable difference] How does the population average MDI change after we eliminate all/some exposures?
+      \item[Causal generalized impact difference] How does the population average MDI change after we reduce all/some exposures by some policy-relevant amount?
+    \end{description}
+\end{frame}
+
+
+\begin{frame}{A note on study questions}
+Causal inference allows us to ask questions with answers that make sense to people who don't know what regression is, without sacrificing rigor
+\bigskip
+
+I always encourage students to ask causal questions because it helps focus and choose methods even when causality is hopeless.
+
+\end{frame}
+
+

@@ -1,0 +1,146 @@
+\title{}
+\subtitle{Foundational concepts}
+\author{
+	\begin{itemize}
+		\item Counterfactuals
+		\item Potential outcomes and consistency
+		\item Causal identification assumptions
+	\end{itemize}
+}
+\date{}
+\begin{frame}
+	\titlepage
+\end{frame}
+
+\begin{frame}{Notation, notation notes}
+	\begin{description}
+		\item[Univariate exposure/treatment] $A$, with realized values $a$ (binary for now)
+		\item[Univariate outcome] $Y$, $y$
+		\item[Confounders] $\bm{W}$, $\bm{w}$
+		\item[Non-confounding covariates] $\bm{V}$, $\bm{v}$
+		\item[Individuals] Individuals will be noted with $i$ subscripts, as little as necessary (e.g. $y_{i}$)
+		\item[Simplification] Except when necessary, I will introduce most concepts for time-fixed data
+	\end{description}
+\end{frame}
+
+
+
+\begin{frame}[c]{Counterfactuals}
+Counterfactuals refer to the \emph{policies} that are counterfactual for each individual: unseen dopplegangers that follow each policy of interest (here ``yes'' or ``no'' exposure)
+
+		\begin{center}
+			\begin{tabular}{lcccc}\hline
+				id      & W   & A\footnote{Here, I distinguish between "setting" $A$ to some value via a policy versus "observing" $A$ at the same value.}   & Y   &  \\\hline
+				1       & 2.9 & yes & no  & factual     \\
+				$1_{y}$ & 2.9 & yes & ?   & counterfactual      \\
+				$1_{n}$ & 2.9 & no  & ?   & counterfactual      \\
+				2       & 0.5 & no  & yes & factual     \\
+				$2_y$   & 0.5 & yes & ?   & counterfactual      \\
+				$2_n$   & 0.5 & no  & ?   & counterfactual      \\
+				\hline
+			\end{tabular}
+		\end{center}
+
+\end{frame}
+
+%\begin{frame}[c]{Closest possible worlds and counterfactuals}
+%	\only<1>{For causal inference, we are often interested in the ``closest possible world'' to our own (we'd like to make inference relevant to our observed world, so we pick a counterfactual that is ``close'' to our own world).}
+%	\only<2>{This can be actualized by filling in covariate values such that the counterfactual observations are identical to the observed data in all ways other than possibly the exposure and outcome
+%	
+%	\begin{center}
+%	\begin{tabular}{lcccc}\hline
+%id & W & A & Y & counterfactual\\\hline
+%1& 2.9& yes & no & no\\
+%$1^{yes}$ & \color{red}{2.9}& yes & ?& yes\\
+%$1^{no}$& \color{red}{2.9}&  no & ?&  yes\\
+%2& 0.5& no & yes& no\\
+%$2^{yes}$ & \color{red}{0.5}& yes & ?& yes\\
+%$2^{no}$ & \color{red}{0.5}&  no & ?& yes\\
+%\hline
+%\end{tabular}
+%\end{center}
+%}
+%
+%\end{frame}
+\begin{frame}[c]{Potential outcomes}
+	\only<1>{\textbf{Potential outcome}: $Y^a$, or the value\footnote{These are ``deterministic'' potential outcomes. We could similarly define ``stochastic'' potential outcomes via a probability distribution on $Y^a$.} of the outcome $Y$ we would have observed, had exposure been set to some value $a$}
+
+	\only<2>{An individual (additive) causal effect of ``yes'' vs. ``no'' exposure is defined as $Y_i^{yes}-Y_i^{no}$.\footnote{In the potential outcomes framework, this is a way of saying ``no causation without manipulation'' - causal effects are undefined without hypothetical manipulation.} 
+	
+	\bigskip
+	
+	In this sense, \textbf{causal effects are defined without data}, so to learn anything about causal effects we need a way to link what we see (data and/or priors), with what could be (potential outcomes).}
+
+\end{frame}
+
+\begin{frame}[c]{Potential outcomes and causal consistency}
+	\only<1>{The link from our factual world to counterfactual observations happens via \textbf{causal consistency}, which is that $Y_i^a = Y_i$ if $A_i=a$. That is, we would expect an individual to have identical outcomes if we set $A=a$ via policy or if we observed $A=a$.\footnote{There is a second assumption here that will be discussed later, which is included in the alternative stable unit treatment value assumption (SUTVA) that was originally used to link counterfactuals with observed data} }
+	\only<2>{
+		Given causal consistency, we can fill in some of the table
+		\begin{center}
+			\begin{tabular}{lcccc}\hline
+				id        & W                  & A   & Y                &  \\\hline
+				1         & 2.9                & yes & no               & factual     \\
+				$1^{yes}$ & \color{black}{2.9} & yes & \color{red}{no}  & counterfactual      \\
+				$1^{no}$  & \color{black}{2.9} & no  & ?                & counterfactual      \\
+				2         & 0.5                & no  & yes              & factual     \\
+				$2^{yes}$ & \color{black}{0.5} & yes & ?                & counterfactual      \\
+				$2^{no}$  & \color{black}{0.5} & no  & \color{red}{yes} & counterfactual      \\
+				\hline
+			\end{tabular}
+		\end{center}
+
+	}
+	\only<3>{
+		Here's another way you may see it:\footnote{Rubin, D. B. (1974). Estimating causal effects of treatments in randomized and nonrandomized studies. Journal of Educational Psychology, 66(5), 688–701.}
+
+		\begin{center}
+			\begin{tabular}{lccccccc}\hline
+				id & W   & A   & Y   & Y$^{yes}$       & Y$^{no}$         \\\hline
+				1  & 2.9 & yes & no  & \color{red}{no} & ?                \\
+				2  & 0.5 & no  & yes & ?               & \color{red}{yes} \\
+				\hline
+			\end{tabular}
+		\end{center}
+	}
+\end{frame}
+
+
+\begin{frame}[t]{The fundamental problem of causal inference}
+	\visible<1->{
+
+	Recall that we define an individual, additive\footnote{We could also use ratios and the relative scale.} causal effect as the difference  $Y_i^{yes}-Y_i^{no}$
+	\begin{center}
+		\begin{tabular}{lcccccccc}\hline
+			id & W   & A   & Y   & Y$^{yes}$         & Y$^{no}$  & $Y^{yes}-Y^{no}$          \\\hline
+			1  & 2.9 & yes & no  & \color{black}{no} & ?& ?                  \\
+			2  & 0.5 & no  & yes & ?                 & \color{black}{yes} & ?\\
+			\hline
+		\end{tabular}
+	\end{center}
+	}
+	\visible<2>{
+		\bigskip
+
+		Even with causal consistency, at least one of the potential outcomes necessary for defining a causal effect will always be missing. This is known as the \textbf{fundamental problem of causal inference}. To make progress we need more assumptions.}
+\end{frame}
+
+
+%\begin{frame}[t]{Aside: The fundamentaler problem of causal inference}
+%	\visible<1->{
+%		Edwards et al.\footnote{Edwards et al. (2000) \emph{IJE}} demonstrated that, due to measurement error $(W,A,Y)$ are not represented by observed quantities (we see mis-measured versions), so the problem is more accurately represented as
+%		\begin{center}
+%			\begin{tabular}{lccccccc}\hline
+%				id & W & A & Y & Y$^{yes}$ & Y$^{no}$ \\\hline
+%				1  & ? & ? & ? & ?         & ?        \\
+%				2  & ? & ? & ? & ?         & ?        \\
+%				\hline
+%			\end{tabular}
+%		\end{center}
+%	}
+%	\visible<2>{
+%		\bigskip
+%
+%		We can't make any progress at all if we don't believe our data (or add assumptions). For today let's believe the data.
+%	}
+%\end{frame}

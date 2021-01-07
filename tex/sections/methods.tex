@@ -1,0 +1,206 @@
+\section{Inverse probability weighting and g-computation to estimate joint and independent effects}
+%%%%%%%%%%%%%%%%
+\begin{frame}[t]
+  \frametitle{Inverse probability weighting and marginal structural models}
+   \only<1>{
+    Inverse probability (of exposure) weighting (IPW) is a method for fitting marginal structural models or estimating other "policy" effects such as "how would the average outcome change if we reduced everyone's exposure to zero".
+    \bigskip
+    
+    IPW within the mixtures context would rely on having a regression model for each exposure of interest, given confounders and co-exposures, and either an outcome model or a set of individuals who are "representative" of the policy contrast of interest
+    \bigskip
+    
+    The basic idea is that the weighted population represents the original study population, had exposures been randomized
+    }
+    \only<2>{
+    Methods for weighting with a single continuous exposure are well known, but typically work only in simple examples\footnote{Naimi, Ashley I., et al. Constructing inverse probability weights for continuous exposures: a comparison of methods. Epidemiology (2014): 292-299.;
+    Kennedy, Edward H., et al. Nonparametric methods for doubly robust estimation of continuous treatment effects. JRSS. Series B, 79(4) (2017): 1229.
+    }
+    \bigskip
+    
+    For joint effects, one would need a model for each exposure of interest\footnote{Hernán, Miguel A., et al. Marginal structural models to estimate the joint causal effect of nonrandomized treatments. JASA 96.454 (2001): 440-448.}
+    \bigskip
+    
+    I cannot recommend use of IPW in the mixtures context for estimating joint or independent effects and do not foresee a way in which current methods could be improved to change this
+    }
+\end{frame}
+%%%%%%%%%%%%%%%%
+
+
+\begin{frame}[t]
+  \frametitle{g-computation}
+    \only<1>{
+    G-computation is a generalization of standardization and can be used for fitting marginal structural models or estimating other "policy" effects such as "how would the average outcome change if we reduced everyone's exposure to zero".
+    \bigskip
+    
+    For time-fixed exposures, g-computation only requires a standard regression model \footnote{Snowden, Jonathan M et al. (2011) Implementation of G-computation on a simulated data set: demonstration of a causal inference technique. AJE 173(7): 731-738.}. Quantile g-computation is a special case.
+    \bigskip
+    
+    G-computation extends to time-varying exposures, but requires more modeling\footnote{e.g. Keil, Alexander P., et al. (2014) The parametric G-formula for time-to-event data: towards intuition with a worked example. Epidemiology 25(6): 889.}
+    }
+    \only<2>{
+    Basic g-computation in the coal plant data:
+    
+    \begin{enumerate}
+      \item Fit a model for E(mdi | a, b, c, confounders)
+      \item Make predictions from that model under the "policy" levels of exposure
+      \item Contrast average predictions for the population or subgroups
+    \end{enumerate}
+
+     }
+\end{frame}
+
+
+\begin{frame}[t, fragile]
+  \frametitle{g-computation}
+  Step 1: fit a model
+\begin{lstlisting}[language=R]
+mdimod <- glm(mdi ~ as*urbanicity + 
+  be*urbanicity + cd*urbanicity + 
+  as*black + be*black + cd*black + 
+  as*be + as*cd + be*cd, data=coalplant)
+\end{lstlisting}
+  Step 2: make predictions from that model (e.g. all exposures equal to 1.0)
+\begin{lstlisting}[language=R]
+preddata <- coalplant
+preddata$as  <- median(coalplant$as)
+preddata$be <- median(coalplant$be)
+preddata$cd <- median(coalplant$cd)
+preddata$pred_med <- predict(mdimod, newdata = preddata)
+\end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[t]
+  \frametitle{g-computation}
+Step 2: (continued)
+\include{snippet/preddata_head.tex}
+Here are the first 5 observations with predictions. The predictions represent the expected outcome (MDI) for someone with specific exposure/covariate values
+\end{frame}
+
+\begin{frame}[t, fragile]
+  \frametitle{g-computation}
+Step 3: Contrast average predictions for the population or subgroups
+\begin{lstlisting}[language=R]
+mean(preddata$pred_med)
+mean(coalplant$mdi)
+\end{lstlisting}
+Taking the mean prediction over the population is, technically, "standardizing" to the empirical distribution of covariates in the data, and yields predicted MDI = 97.7, which is higher than the average observed MDI of 96.9. 
+\bigskip
+
+The population average MDI is, technically speaking, the expected MDI under the policy "do nothing." So we could contrast that with our expected MDI under the policy "set all exposures to the observed medians" and get an average MDI difference of 0.8, meaning we would expect the population average MDI to increase by 0.8 if we changed everyone's exposures to the median.
+\end{frame}
+
+\begin{frame}[t, fragile]
+  \frametitle{g-computation}
+Step 3: Contrast average predictions for the population or subgroups
+\begin{lstlisting}[language=R]
+mean(filter(preddata, black==1)$pred_med)
+mean(filter(preddata, black==1)$mdi)
+\end{lstlisting}
+This same contrast among those in the population who self-identified as Black yields an estimate of 1.8. Ignoring uncertainty, this is a larger impact than is observed in the overall population suggesting effect measure modification for the policy effect. 
+\end{frame}
+
+
+\begin{frame}[t, fragile]
+  \frametitle{g-computation interpretation}
+If our causal identification conditions hold, and the linear model we fit is correct, then causal inference tells us that we can interpret our results causally.
+\bigskip
+
+This should not be the default - the hard work of causal inference is showing that the identification conditions hold at least approximately.
+\bigskip
+
+Without these conditions, g-computation still gives us a standardized effect estimate, which is as valid as any other estimate and has the advantage of directly targeting a scientific question of interest, rather than forcing a question that is answered by regression coefficients.
+\end{frame}
+
+
+\begin{frame}[t, fragile]
+  \frametitle{g-computation: the "underlying fit"}
+    \begin{columns}
+    \begin{column}[c]{.4\textwidth}
+    The "underlying fit" for g-computation could be anything, but I (didactically) opted for flexibility by including 9 product terms. (In practice, I use model fit criteria and model dx).
+    \bigskip
+    
+    Product terms are difficult to interpret in this context, but note no strong evidence of EMM by race. 
+    \end{column}
+    \begin{column}[c]{.6\textwidth}
+    {\scriptsize \include{snippet/model_coefs.tex}}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}[t, fragile]
+  \frametitle{g-computation: change in average MDI}
+Using the same underlying model, I estimated more contrasts:
+    \begin{itemize}
+      \item The independent effects of reducing each exposure to zero (Attributable difference)
+      \item The joint effect of "coal plant decommissioning" by cutting every individual's exposure according to the proportion we would expect based on local coal-plant emissions (96\% As, 91\% Be, 50\% Cd)\footnote{These are actually based on estimates for Milwaukee County from the 2014 National Emissions Inventory and used in a forthcoming publication: Keil, A. P., et al. (2021). Bayesian G-Computation to Estimate Impacts of Interventions on Exposure Mixtures: Demonstration with Metals from Coal-Fired Power Plants and Birth- weight. AJE}, versus no action (Generalized impact difference)     
+     \item Both of the above restricted to Black participants only 
+    \end{itemize}
+ \end{frame}
+
+\begin{frame}[t, fragile]
+  \frametitle{g-computation: extending effect estimates}
+  \include{snippet/gcomp_results.tex}
+ \end{frame}
+
+\begin{frame}[t, fragile]
+  \frametitle{g-computation: interpretation}
+  Under the causal identification conditions, correct model specification, eliminating arsenic exposure would result in a 2.8 point gain in the population average MDI, an effect which would be stronger among Black participants in the study (3.42).
+  \bigskip
+  
+  Provided that we have accurately predicted what would happen to these exposures if local coal-fired power plants were shut down, then Black participants could have experienced a nearly 6 point gain in MDI.
+  \bigskip
+  
+  Notably, the underlying model had only weak evidence for effect measure modification by race: these estimates also reflect the fact that Black participants were exposed to higher levels of exposure.
+ \end{frame}
+
+\begin{frame}[t, fragile]
+  \frametitle{quantile g-computation: a special case}
+  Recall that outcome regression potentially involves a lot of extrapolation for independent effects. Our "joint effect" of a shutdown may similarly involve (to a lesser extent) extrapolation because not all exposures were reduced by similar amounts.
+  
+  \bigskip
+  I re-examined the data using quantile g-computation via the qgcomp R-package with a linear underlying model, and stratified by race. 
+  
+  \bigskip
+  Quantile g-computation estimates a marginal structural model for a 1-quantile (default: quartile) increase in exposure.
+
+ \end{frame}
+
+\begin{frame}[t, fragile]
+  \frametitle{quantile g-computation: a special case}
+  \include{snippet/qgcomp_results.tex}
+
+ \end{frame}
+
+
+\begin{frame}[t, fragile]
+  \frametitle{Wrapping up}
+    \begin{itemize}
+      \item The hard work of causal inference is in the assumptions: one should take great care
+      \item In our example, it's likely that other pollutants from coal-fired power-plants would affect MDI, so in real examples this simple analysis would be confounded
+      \item In more complex scenarios, we may have modeling problems that require Bayesian solutions to reduce mean-squared error\footnote{This is relatively straightforward: Keil, AP., et al. (2018) A Bayesian approach to the g-formula." SMMR 27(10): 3183-3204.}
+      \item Machine learning may similarly address modeling issues\footnote{Oulhote, Youssef, et al. Combining ensemble learning techniques and G-computation to investigate chemical mixtures in environmental epidemiology studies. bioRxiv (2017): 147413.}
+      \item There are still many technical issues to address inference in high dimensions: this is a fact of our field but should be kept in mind.
+    \end{itemize}
+
+ \end{frame}
+
+\begin{frame}[t, fragile]
+  \frametitle{Wrapping up}
+  However,
+    \begin{itemize}
+      \item Even if we don't believe the causal identification conditions fully, methods like g-computation are as valid as standard regression approaches
+      \item Methods like g-computation are extremely helpful to take complex modeling scenarios (e.g. a highly flexible model that allows product terms) and still have interpretable results
+      \item Done carefully, focusing on joint effects can reduce some of the statistical/identification issues that arise in mixtures
+      \item G-computation allows us to [... left blank to emphasize that we can do almost anything with g-computation]
+    \end{itemize}
+
+ \end{frame}
+
+
+\begin{frame}[c, fragile]
+\centering
+Thank you
+ \end{frame}
+
+

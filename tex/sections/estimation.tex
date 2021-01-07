@@ -1,0 +1,110 @@
+\title{}
+\subtitle{Estimating population average causal effects}
+\author{
+ Regression and standardization in causal effect estimation
+}
+\date{}
+\begin{frame}
+	\titlepage
+\end{frame}
+
+\begin{frame}
+Motivating example: OSHA limits for silica exposure are based on the the absolute difference in the number of expected deaths in a worker population contrasting one policy with another (i.e. a risk difference)
+\end{frame}
+
+
+\begin{frame}{Recall: Current framework for silica exposure limits}
+	\small{
+		\input{fig/sil/currentregmodel.tex}
+	}
+\end{frame}
+
+
+%\begin{frame}{Current framework for silica exposure limits}
+%  The current framework relies on deriving summary regression coefficients from the literature and plugging these in to life tables. The potential outcomes framework tells us exactly where this can go wrong (inadequate control of time-varying confounding, inappropriately conditioning on causal intermediates, ignoring the population of workers in exchange for an artificial target population) 
+%\end{frame}
+
+
+\begin{frame}{Causal framework for silica exposure limits}
+	\small{
+		\input{fig/sil/proposedregmodel.tex}
+	}
+\end{frame}
+
+
+
+\begin{frame}[c]{Average causal effects and regression}
+  \only<1>{Population average causal effects are sometimes called ``marginal'' causal effects}
+  \only<2>{Marginal effects have a special place on the altar of causal inference because they represent policy contrasts in an entire study/target population of interest.}
+  \only<3>{In general, regression parameters, the backbone of epidemiologic inferences, do not yield marginal effects\footnote{They yield conditional average effects or weighted averages of conditional average effects}}
+  \visible<4->{Except for one special case:}
+  \visible<5>{
+  
+  (Correctly specified) linear models:%\footnote{These are both examples of marginal structural models}:
+  
+  \begin{align*}
+    E(Y^a) = f(y^a|\bm{\beta}) =& \beta_0 + {\color{red}\beta_1} a\\
+    E(Y^a|W=w) = f(y^a | w, \bm{\eta}) =& \eta_0 + {\color{red}\eta_1} a + \eta w
+  \end{align*}
+   $\beta_1 = \eta_1 $ = conditional causal effect = marginal/average causal effect of $a$ vs. $a-1$ %(because the model is correct and the effect of $A$ does not depend on $W$)
+  
+  }
+\end{frame}
+
+\begin{frame}[c]{Average causal effects and standardization}
+  \only<1>{Standardization is another classical tool for epidemiologic inference.}
+  \only<2>{Standardized estimates and regression parameters are both \emph{weighted averages of conditional/stratified causal effects}.}
+  \only<3>{Regression ``weights'' operate like information weights, so strata with more precise conditional effects get more weight.}
+  \only<4>{Standardization ``weights'' are based on confounder distributions, so strata with common covariate combinations get more weight.}
+  \only<5->{
+    \begin{itemize}
+  \visible<5->{\item The weighting scheme of standardization means that it yields marginal effects, whereas regression does not in general.}
+  \visible<6->{\item IPW and g-computation, both prominent statistical approaches in causal inference, are based on standardization and yield marginal effects. }
+  \end{itemize}
+  }
+\end{frame}
+
+\begin{frame}{Regression vs. standardization}
+\only<1>{
+ \begin{columns}
+   \begin{column}{.25\linewidth}
+   \small{
+     \input{stdtab.tex}
+     }
+   \end{column}
+   \begin{column}{.65\linewidth}
+     Standardization:
+     \begin{align*}
+     E(Y^a) =& \sum_w E(Y^a | W=w)Pr(W=w)\\
+                 =& \sum_w E(Y |A=a, W=w)Pr(W=w)\\
+     \hat{E}(Y^1) =&  -0.3*0.\hist{6} + -0.4*0.\hist{3} = -0.\hist{3} \\
+     \hat{E}(Y^0) =& -0.225*0.\hist{6} + -0.55*0.\hist{3} = -0.\hist{3} \\
+     &\hat{E}(Y^1) - \hat{E}(Y^0) =  {\color{red}0.0} \mbox{ (correct) }
+     \end{align*}
+     Regression:
+     \begin{align*}
+     \hat{E}(Y |A=a, W=w,\bm{\beta})=& \beta_0 + \beta_1 A + \beta_2 W\\
+     &\hat{\beta}_1 = {\color{red}-0.02}\mbox{???}
+     \end{align*}
+   \end{column}
+ \end{columns}
+ }
+ \only<2>{
+   Regression doesn't give the correct answer here because the linear model is \textbf{misspecified}\footnote{an additional assumption and motivation for bringing machine learning tools to causal inference!} - the additive effect of $A$ on $Y$ depends on $W$, so the model should include an $A*W$ interaction term. However, once we do that, there are now two, stratum specific estimates of effect for $W=(0,1)$, so we are stuck with conditional effects.
+ }
+ \only<3>{
+   However, returning to this derivation (with missing step added) \footnote{Line 2: exchangeability and positivity; line 3: causal consistency}
+        \begin{align*}
+     E(Y^a) =& \sum_w E(Y^a | W=w)Pr(W=w)\\
+                 =& \sum_w E(Y^a |A=a, W=w)Pr(W=w) \\
+                 =& \sum_w E(Y |A=a, W=w)Pr(W=w)\\
+     \end{align*}
+     \vspace{-1.5cm}
+     
+ we can use parametric regression models to estimate $E(Y |A=a, W=w)$ and $Pr(W=w)$, and then standardize. This is a simple version of the \textbf{parametric g-formula}.
+ }
+ \only<4>{
+   It's clear then, that the problem with causal inference with regression is not that it is regression - rather, the problem is in how it is used. Simply interpreting the model coefficients will rarely yield conditional or marginal causal effects, even when the causal identification assumptions hold.
+   
+ }
+\end{frame}
